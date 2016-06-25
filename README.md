@@ -1,9 +1,11 @@
 # Setup Dockerized development environment
-Docker環境をローカルマシンに作成
+- Docker環境をローカルマシンに作成
+- composerでFWなどのパッケージを導入して使用する想定
+
 ## Installation
 [Docker Toolbox](https://www.docker.com/products/docker-toolbox)
 
-dockerコマンド、docker-machineコマンド、docker-composeコマンド全部入りです。
+dockerコマンド、docker-machineコマンド、docker-composeコマンド全部入り
 ```bash
 $ brew cask install dockertoolbox
 ```
@@ -29,11 +31,12 @@ $ docker-machine env myservice
     別のDocker machineを使う場合はその都度設定する必要あり
 
 ## コンテナレジストリにログイン認証を通す
-e.g. Dockerhubを使った例
+e.g. [Dockerhub](https://hub.docker.com/)を使った例
+     アカウントを取得しておく
 ```bash
 $ docker login
 ```
-`Login Succeeded`
+`Login Succeeded`5656
 
 これでSetup準備完了
 
@@ -47,6 +50,7 @@ Successfully built.
 
 $ docker-compose up -d
 ```
+composer.jsonに書かれているパッケージがインストールされる（Laravel in this case）
 コンテナの起動確認
 ```
 $ docker ps
@@ -67,12 +71,12 @@ DB_USERNAME   = myservice
 DB_PASSWORD   = secret
 ```
 
-$DOCKER_HOSTの値を、/etc/hostに追記
+$DOCKER_HOSTの値を、ローカルの`/etc/host`に追記  
 ```
-192.168.***.**  dev.it-trend-next.jp
+192.168.***.**  dev.myservice.jp
 ```
 
-`dev.it-trend-next.jp` ブラウザアクセスしてLaravelの確認
+`dev.myservice.jp` ブラウザアクセスしてLaravelの確認
 
 ### data import
 データ専用のコンテナを作成する迄は、一旦S3からコピーする
