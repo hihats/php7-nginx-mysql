@@ -1,31 +1,43 @@
-db:
-  build: ./containers/db
-  restart: always
-  environment:
-    MYSQL_ROOT_PASSWORD: pass
-  volumes:
-    - db:/var/lib/mysql
-    - ./containers/db:/var/tmp/mysql
-#  entrypoint: /var/tmp/mysql/entrypoint.sh
-  container_name: db
-web:
-  build: .
-  restart: always
-  ports:
-    - '80:8080'
-  volumes:
-    - .:/var/www/html
-    - ./containers/web/log:/var/log/nginx
-  environment:
-    MYSQL_DATABASE: mydb
-    MYSQL_USER: myservice
-    MYSQL_PASSWORD: secret
-  links:
-    - db
-    - memcached
-  working_dir: /var/www/html
-  container_name: web
-memcached:
-  image: memcached
-  restart: always
-  container_name: memcached
+version: "2"
+
+services:
+  db:
+    image: mysql:5.6
+    restart: always
+    environment:
+      MYSQL_DATABASE: mydb
+      MYSQL_USER: myservice
+      MYSQL_PASSWORD: secret
+      MYSQL_ROOT_PASSWORD: pass
+  #    - ./containers/db:/var/tmp/mysql
+  #  entrypoint: /var/tmp/mysql/entrypoint.sh
+    container_name: db
+  web:
+    build: .
+    restart: always
+    volumes:
+      - .:/var/www/html
+  #    - ./containers/web/log:/var/log/nginx
+    environment:
+      DB_HOST: db
+      DB_DATABASE: mydb
+      DB_USERNAME: myservice
+      DB_PASSWORD: secret
+    links:
+      - db
+    ports:
+      - '8080:8080'
+    working_dir: /var/www/html
+    container_name: web
+  nginx:
+    image: nginx:alpine
+    volumes:
+      - ./etc/nginx/conf.d/:/etc/nginx/conf.d/
+      - .:/var/www/html/
+    ports:
+      - '8000:80'
+    links:
+      - web
+    depends_on:
+      - web
+    container_name: nginx
